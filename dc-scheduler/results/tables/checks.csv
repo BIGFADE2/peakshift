@@ -1,0 +1,12 @@
+﻿check,result,evidence
+Power balance residual (MW),PASS,1.78e-15
+SOC recursion residual (MWh),PASS,8.88e-15
+SOC within bounds,PASS,"[0.50, 20.00]"
+Deferrable energy conserved (MWh),PASS,100.0000 vs 100.0
+No compute after deadline,PASS,max=0.00e+00
+Grid import under transformer limit,PASS,13.100 MW
+PV within availability,PASS,OK
+Battery power within limits,PASS,max=5.000 MW
+Two solvers agree,PASS,"gap 3.38e-16 (64,597.5 vs 64,597.5)"
+Brute force (4 slots x 21 levels),PASS,"LP=21,649.62 / brute=21,649.62 CNY, LP lower by 0.00%, 194,481 combinations"
+Greedy heuristic not better than LP,PASS,"LP 64,518 <= greedy 80,736 CNY (gap 16,218)"

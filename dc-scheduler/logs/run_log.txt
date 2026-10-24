@@ -1,0 +1,108 @@
+==============================================================================
+HackSHSID 2026 / Track 2 -- AI data center compute-power co-scheduling
+==============================================================================
+
+[1] Instance (parameters calibrated from public sources, see docs/report.md)
+    rigid_MWh                     72.10
+    batch_MWh                    100.00
+    solar_MWh                     56.09
+    solar_peak_MW                  8.00
+    price_min                    340.00
+    price_max                   1080.00
+    carbon_min                   450.00
+    carbon_max                   760.00
+
+[2] Plan comparison
+    plan              cost/day     CO2/day   peak MW   CNY/MWh   gCO2/kWh   save %   CO2 %
+    No scheduling       92,822      99,092     10.12       654        699      0.0     0.0
+    Shift only          72,394     100,956     11.78       510        712     22.0    -1.9
+    Storage only        84,313     100,131     13.91       570        695      9.2    -1.0
+    Full plan           64,518     101,890     13.10       435        708     30.5    -2.8
+    Low-carbon         103,940      85,173     15.00       708        592    -12.0    14.0
+
+[3] Cost-carbon Pareto frontier (weighted sum, 40 carbon prices)
+    min cost   (64,518 CNY, 101,890 kg)
+    min carbon (103,940 CNY, 85,173 kg)
+    knee point (71,388 CNY, 95,847 kg, carbon price 1.535 CNY/kg)
+    note: the cost-optimal set is a whole face (many equal-cost schedules); the cleanest one reaches 100,570 kg -- free abatement at the same price
+    marginal abatement cost on the frontier -0 ~ 2 CNY/kg = -0 ~ 2,358 CNY/tCO2
+
+[4] Sensitivity analysis
+    battery    0 MWh -> save  22.0%  carbon  -1.8%
+    battery    5 MWh -> save  24.2%  carbon  -2.3%
+    battery   10 MWh -> save  26.3%  carbon  -2.4%
+    battery   20 MWh -> save  30.5%  carbon  -2.8%
+    battery   30 MWh -> save  34.2%  carbon  -3.0%
+    battery   40 MWh -> save  35.5%  carbon  -4.4%
+    deadline   12:00 -> infeasible (work does not fit)
+    deadline   14:00 -> save  29.6%  carbon  -3.5%
+    deadline   16:00 -> save  30.5%  carbon  -3.1%
+    deadline   18:00 -> save  30.5%  carbon  -2.8%
+    deadline   20:00 -> save  30.5%  carbon  -2.8%
+    deadline   22:00 -> save  30.5%  carbon  -2.8%
+    carbon price     0 CNY/t -> save  30.5%  carbon  -2.8%
+    carbon price    20 CNY/t -> save  30.5%  carbon  -2.4%
+    carbon price    50 CNY/t -> save  30.5%  carbon  -2.0%
+    carbon price   100 CNY/t -> save  30.5%  carbon  -1.6%
+    carbon price   200 CNY/t -> save  30.5%  carbon  -1.5%
+    carbon price   500 CNY/t -> save  30.5%  carbon  -1.5%
+    carbon price  1000 CNY/t -> save  30.5%  carbon  -1.5%
+    carbon price  2000 CNY/t -> save  23.1%  carbon  +3.3%
+    PV peak    0 MW -> save  25.9%  carbon  -4.4%
+    PV peak    4 MW -> save  28.6%  carbon  -3.7%
+    PV peak    8 MW -> save  30.5%  carbon  -2.8%
+    PV peak   12 MW -> save  41.2%  carbon  +6.0%
+    PV peak   16 MW -> save  50.8%  carbon +25.7%
+    night carbon  400 -> save  30.5%  carbon +16.2%
+    night carbon  500 -> save  30.5%  carbon  +9.7%
+    night carbon  600 -> save  30.5%  carbon  +4.0%
+    night carbon  700 -> save  30.5%  carbon  -1.0%
+    night carbon  800 -> save  30.5%  carbon  -5.4%
+
+    Demand-charge (peak shaving) experiment:
+        0 CNY/MW/day -> peak 13.10 MW  cost    64,518  CO2   101,890
+      300 CNY/MW/day -> peak 12.80 MW  cost    68,358  CO2   101,442
+      600 CNY/MW/day -> peak 12.79 MW  cost    72,191  CO2   101,442
+     1200 CNY/MW/day -> peak 12.79 MW  cost    79,863  CO2   101,442
+     2400 CNY/MW/day -> peak 12.79 MW  cost    95,207  CO2   101,442
+
+    Scenario B (Shandong-style midday valley, PV-rich grid):
+    save 39.4%  carbon +2.4%
+
+    Scenario C (wind-rich nights, night carbon 740 -> 430):
+    full plan   : save 30.5%  carbon +14.2%
+    storage only: save 9.2%  carbon +2.8%  (scenario A storage-only: -1.0%)
+
+[5] Robustness: PV forecast error (200 Monte Carlo draws, seed=42)
+    fixed schedule : mean 29.2%  5th pct 28.2%  worst 27.6%
+    perfect foresight: mean 30.7% (upper bound)
+
+[6] Independent verification
+    [PASS] Power balance residual (MW) 1.78e-15
+    [PASS] SOC recursion residual (MWh)8.88e-15
+    [PASS] SOC within bounds           [0.50, 20.00]
+    [PASS] Deferrable energy conserved (MWh)100.0000 vs 100.0
+    [PASS] No compute after deadline   max=0.00e+00
+    [PASS] Grid import under transformer limit13.100 MW
+    [PASS] PV within availability      OK
+    [PASS] Battery power within limits max=5.000 MW
+    [PASS] Two solvers agree           gap 3.38e-16 (64,597.5 vs 64,597.5)
+    [PASS] Brute force (4 slots x 21 levels)LP=21,649.62 / brute=21,649.62 CNY, LP lower by 0.00%, 194,481 combinations
+    [PASS] Greedy heuristic not better than LPLP 64,518 <= greedy 80,736 CNY (gap 16,218)
+    total 11/11 passed
+
+[7] Figures
+    fig1_inputs.png
+    fig2_schedule.png
+    fig3_compare.png
+    fig4_pareto.png
+    fig5_sensitivity.png
+    fig6_robustness.png
+    cover.png
+
+[8] Summary
+    no scheduling: 92,822 CNY/day, 99,092 kgCO2/day
+    full plan    : 64,518 CNY/day, 101,890 kgCO2/day
+    cost 30.5% down, carbon -2.8%
+    valley-price share of energy bought: 71.1% (no scheduling: 39.8%)
+    runtime 19.5 s
