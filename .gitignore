@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pylibs/
+.wheelhouse/
+.venv/
+out.txt
+_smoke.py
+_smoke2.py
+_debug_plot.py
+_probe2.py
+*.png.bak
